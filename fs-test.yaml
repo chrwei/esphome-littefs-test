@@ -1,0 +1,52 @@
+esphome:
+  name: fs-test
+  libraries:
+   - "LittleFS"
+  on_boot:
+    then:
+      - lambda: |-
+          ESP_LOGD("boot", "booted %s", "OK");
+
+#esp32:
+#  board: hornbill32dev
+esp8266:
+  board: d1_mini
+
+wifi:
+  ap:
+    ssid: fs-test-config
+    password: "123456789"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+ota:
+  platform: esphome
+
+external_components:
+  - source: components
+
+globals:
+  - id: switch_prev_state
+    type: bool
+    restore_value: no
+    initial_value: "false"
+
+littlefs:
+  - id: my_files
+    on_setup:
+      then:
+        - lambda: |-
+            String d;
+            if(!my_files->get("names", d)){
+              ESP_LOGE("files","Reading failed");
+              d = "test";
+              my_files->put("names", d);
+              ESP_LOGE("files","wrote file");
+              return;
+            }
+            ESP_LOGD("files","data %s", d);
+
+
