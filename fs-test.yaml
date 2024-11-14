@@ -1,5 +1,7 @@
 esphome:
   name: fs-test
+  platformio_options:
+    board_build.ldscript: "eagle.flash.4m1m.ld"
   libraries:
    - "LittleFS"
   on_boot:
@@ -40,11 +42,12 @@ littlefs:
       then:
         - lambda: |-
             String d;
+            ESP_LOGD("files","data %s", d);
             if(!my_files->get("names", d)){
               ESP_LOGE("files","Reading failed");
               d = "test";
               my_files->put("names", d);
-              ESP_LOGE("files","wrote file");
+              ESP_LOGD("files","wrote file");
               return;
             }
             ESP_LOGD("files","data %s", d);
